@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { IntroLuna } from '@/components/IntroLuna';
+import { WebFrame } from '@/components/WebFrame';
 import { AppProvider, useStore } from '@/store/app';
 import { colors } from '@/theme';
 
@@ -54,11 +55,13 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <AppProvider>
-          <StatusBar style="dark" />
-          <RootStack />
-          <IntroLuna />
-        </AppProvider>
+        <WebFrame>
+          <AppProvider>
+            <StatusBar style="dark" />
+            <RootStack />
+            <IntroLuna />
+          </AppProvider>
+        </WebFrame>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
