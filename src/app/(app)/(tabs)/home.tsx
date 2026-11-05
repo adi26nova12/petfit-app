@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as api from '@/api';
 import { PetAvatar, ProductCard, VetCard } from '@/components/blocks';
 import { ScoreRing } from '@/components/charts';
-import { Icon } from '@/components/Icon';
+import { OfferArt } from '@/components/OfferArt';
 import { Button, Card, IconButton, IconTile, Notice, Pill, Row, SectionHeader, Skeleton, T } from '@/components/ui';
 import { homeOffer } from '@/data/services';
 import { greeting, inr, petSubtitle, relativeDue, shortDate, daysFrom } from '@/lib/format';
@@ -132,10 +132,8 @@ export default function Home() {
                 accessibilityRole="button"
                 onPress={() => router.push(o.slug === 'food' || o.slug === 'products' ? { pathname: '/shop', params: { cat: o.slug === 'food' ? 'food' : '' } } : { pathname: '/service/[slug]', params: { slug: o.slug } })}
                 style={({ pressed }) => [styles.tile, pressed && { transform: [{ scale: 0.97 }] }]}>
-                <IconTile tone={o.tone as Tone} size={42}>
-                  <Icon name={o.icon} size={21} color={colors.ink} />
-                </IconTile>
-                <T v="title" style={{ marginTop: 10 }}>{o.name}</T>
+                <OfferArt name={o.name} size={60} />
+                <T v="title" style={{ marginTop: 8 }}>{o.name}</T>
                 <T v="caption" numberOfLines={2}>{o.items}</T>
               </Pressable>
             ))}
