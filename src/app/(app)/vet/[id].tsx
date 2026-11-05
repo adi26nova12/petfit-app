@@ -1,8 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Award, Building2, Languages, MapPin, Video } from 'lucide-react-native';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { Award, Building2, Languages, MapPin, Video } from '@/components/doodles';
 import * as api from '@/api';
 import { PersonAvatar, Verified } from '@/components/blocks';
 import { Button, Card, Divider, EmptyState, Loading, Pill, Rating, Row, Screen, Segmented, T, TopBar } from '@/components/ui';

@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
-import { CalendarClock, MapPin, Video } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, View } from 'react-native';
 
+import { CalendarClock, MapPin, Video } from '@/components/doodles';
 import * as api from '@/api';
 import type { Booking } from '@/api/types';
 import { PetAvatar } from '@/components/blocks';
@@ -36,7 +36,7 @@ function BookingCard({ b }: { b: Booking }) {
     <Card>
       <Row gap={12} align="flex-start">
         <IconTile tone={b.mode === 'tele' ? 'teal' : 'purple'}>
-          {b.mode === 'tele' ? <Video size={20} color={colors.teal} /> : <CalendarClock size={20} color={colors.brand600} />}
+          {b.mode === 'tele' ? <Video size={29} color={colors.teal} /> : <CalendarClock size={29} color={colors.brand600} />}
         </IconTile>
         <View style={{ flex: 1 }}>
           <T v="caption">{service?.name}</T>

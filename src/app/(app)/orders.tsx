@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
-import { ChevronRight, Package } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { View } from 'react-native';
 
+import { Package } from '@/components/doodles';
 import { orderStatusLabel } from '@/components/OrderTracker';
 import { Button, Card, EmptyState, IconTile, Pill, Row, Screen, T, TopBar } from '@/components/ui';
 import { inr, shortDate } from '@/lib/format';
@@ -22,7 +23,7 @@ export default function Orders() {
             <Card key={o.id} onPress={() => router.push({ pathname: '/order/[id]', params: { id: o.id } })}>
               <Row gap={12}>
                 <IconTile tone={o.status === 'delivered' ? 'teal' : 'amber'}>
-                  <Package size={20} color={o.status === 'delivered' ? colors.teal : colors.amberInk} />
+                  <Package size={29} color={o.status === 'delivered' ? colors.teal : colors.amberInk} />
                 </IconTile>
                 <View style={{ flex: 1 }}>
                   <Row style={{ justifyContent: 'space-between' }}>

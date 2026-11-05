@@ -1,7 +1,8 @@
-import { House, MapPin, Plus, Store } from 'lucide-react-native';
+import { Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { House, MapPin, Store } from '@/components/doodles';
 import * as api from '@/api';
 import type { Address } from '@/api/types';
 import { Button, Card, Field, Row, Screen, Segmented, T, TopBar } from '@/components/ui';

@@ -1,17 +1,20 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ArrowRight, BadgeCheck, FileText, FlaskConical, Scissors, Stethoscope, Syringe } from 'lucide-react-native';
-import { useCallback, useRef, useState } from 'react';
+import { ArrowRight } from 'lucide-react-native';
+import { useRef, useState } from 'react';
 import { FlatList, StyleSheet, useWindowDimensions, View, type ListViewToken } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BadgeCheck, FileText, FlaskConical, Scissors, Stethoscope, Syringe } from '@/components/doodles';
+import { MascotStage } from '@/components/mascots';
 import { Button, Paw, Row, T } from '@/components/ui';
 import { useStore } from '@/store/app';
 import { colors, fonts, radius } from '@/theme';
 
-const duo = require('@/assets/brand/luna-pip-sitting.webp');
 const logo = require('@/assets/brand/petfit-logo-white.png');
+
+const HELLO = ['Hi! I’m Pip. Woof.', 'And I’m Luna. Meow.', 'Tap us. We dare you.'];
 
 type Slide = { key: string; lead: string; accent: string; tail: string; body: string };
 const slides: Slide[] = [
@@ -22,7 +25,7 @@ const slides: Slide[] = [
 
 function Visual({ slide, width }: { slide: Slide; width: number }) {
   if (slide.key === 'one') {
-    return <Image source={duo} style={{ width: width * 0.86, height: width * 0.67 }} contentFit="contain" accessibilityLabel="Luna the cat and Pip the dog" />;
+    return <MascotStage width={Math.min(width * 0.86, 420)} lines={HELLO} style={{ marginTop: 18 }} />;
   }
   if (slide.key === 'two') {
     const docs = [
@@ -75,9 +78,15 @@ export default function Onboarding() {
   const { dispatch } = useStore();
   const [index, setIndex] = useState(0);
   const list = useRef<FlatList<Slide>>(null);
-  const onViewable = useCallback(({ viewableItems }: { viewableItems: ListViewToken[] }) => {
-    if (viewableItems[0]?.index != null) setIndex(viewableItems[0].index);
-  }, []);
+  // FlatList refuses a viewability callback or config that changes identity, so create the pair once.
+  const [viewability] = useState(() => [
+    {
+      viewabilityConfig: { itemVisiblePercentThreshold: 60 },
+      onViewableItemsChanged: ({ viewableItems }: { viewableItems: ListViewToken[] }) => {
+        if (viewableItems[0]?.index != null) setIndex(viewableItems[0].index);
+      },
+    },
+  ]);
 
   const last = index === slides.length - 1;
   const next = () => {
@@ -107,8 +116,7 @@ export default function Onboarding() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onViewableItemsChanged={onViewable}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
+        viewabilityConfigCallbackPairs={viewability}
         getItemLayout={(_, i) => ({ length: width, offset: width * i, index: i })}
         renderItem={({ item }) => (
           <View style={{ width, paddingHorizontal: 24, justifyContent: 'center' }}>

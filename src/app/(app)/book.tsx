@@ -1,8 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { House, MapPin, Store, Video } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { House, MapPin, Store, Video } from '@/components/doodles';
 import * as api from '@/api';
 import type { BookingMode } from '@/api/types';
 import { PetAvatar } from '@/components/blocks';

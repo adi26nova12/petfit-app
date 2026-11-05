@@ -1,8 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Droplet, Flame, TriangleAlert } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 
+import { Droplet, Flame, TriangleAlert } from '@/components/doodles';
 import type { LifeStage } from '@/api/types';
 import { BodyGauge, MacroBar } from '@/components/charts';
 import { Button, Card, Chip, ChipRow, Field, IconTile, Notice, Pill, Row, Screen, Segmented, T, TopBar } from '@/components/ui';
@@ -54,12 +54,12 @@ function Calories() {
         <>
           <Row gap={10} style={{ marginTop: 14 }} align="stretch">
             <Card style={{ flex: 1 }}>
-              <IconTile tone="amber" size={36}><Flame size={18} color={colors.amberInk} /></IconTile>
+              <IconTile tone="amber" size={36}><Flame size={26} color={colors.amberInk} /></IconTile>
               <T v="h1" style={{ marginTop: 10 }}>{plan.derKcal}</T>
               <T v="caption">kcal per day</T>
             </Card>
             <Card style={{ flex: 1 }}>
-              <IconTile tone="teal" size={36}><Droplet size={18} color={colors.teal} /></IconTile>
+              <IconTile tone="teal" size={36}><Droplet size={26} color={colors.teal} /></IconTile>
               <T v="h1" style={{ marginTop: 10 }}>{plan.waterMl}</T>
               <T v="caption">ml water per day</T>
             </Card>

@@ -1,8 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Heart, RotateCcw, ShoppingCart, Truck } from 'lucide-react-native';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { Heart, RotateCcw, ShoppingCart, Truck } from '@/components/doodles';
 import * as api from '@/api';
 import { ProductArt } from '@/components/blocks';
 import { Button, Chip, EmptyState, IconButton, Loading, Pill, Rating, Row, Screen, Stepper, T, TopBar } from '@/components/ui';
@@ -51,7 +51,7 @@ export default function ProductDetail() {
         right={
           <Row gap={8}>
             <IconButton label={wished ? 'Remove from wishlist' : 'Add to wishlist'} onPress={() => dispatch({ type: 'wish', productId: p.id })}>
-              <Heart size={19} color={wished ? colors.danger : colors.ink} fill={wished ? colors.danger : 'transparent'} />
+              <Heart size={20} dim={!wished} />
             </IconButton>
             <IconButton label="Cart" badge={cartCount} onPress={() => router.push('/cart')}>
               <ShoppingCart size={19} color={colors.ink} />

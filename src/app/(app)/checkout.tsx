@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
-import { Banknote, Check, CreditCard, House, Plus, Smartphone, Store } from 'lucide-react-native';
+import { Check, Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Banknote, CreditCard, House, Smartphone, Store } from '@/components/doodles';
 import * as api from '@/api';
 import { OrderSummary } from '@/components/blocks';
 import { Button, Loading, Row, Screen, T, TopBar, tap } from '@/components/ui';

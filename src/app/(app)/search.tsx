@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
-import { ChevronRight, Search as SearchIcon, X } from 'lucide-react-native';
+import { ChevronRight, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
+import { Search as SearchIcon } from '@/components/doodles';
 import * as api from '@/api';
 import { PersonAvatar, ProductArt } from '@/components/blocks';
 import { Icon } from '@/components/Icon';
@@ -50,7 +51,7 @@ export default function Search() {
           <T v="eyebrow" color={colors.muted} style={styles.h}>Services</T>
           {svc.map((s) => (
             <Pressable key={s.slug} onPress={() => openService(router, s)} style={styles.row}>
-              <IconTile tone={s.tone} size={38}><Icon name={s.icon} size={18} color={tones[s.tone].fg} /></IconTile>
+              <IconTile tone={s.tone} size={38}><Icon name={s.icon} size={26} color={tones[s.tone].fg} /></IconTile>
               <T v="title" style={{ flex: 1 }}>{s.name}</T>
               <ChevronRight size={18} color={colors.muted} />
             </Pressable>

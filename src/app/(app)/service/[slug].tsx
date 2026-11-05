@@ -1,8 +1,8 @@
 import { Redirect, useLocalSearchParams } from 'expo-router';
-import { CircleCheck, MapPin } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
+import { CircleCheck, MapPin } from '@/components/doodles';
 import * as api from '@/api';
 import { ProviderCard, VetCard } from '@/components/blocks';
 import { Icon } from '@/components/Icon';
@@ -18,7 +18,7 @@ function Hero({ service }: { service: Service }) {
     <View style={{ backgroundColor: t.bg, borderRadius: radius.xl, padding: 18, marginTop: 4 }}>
       <Row gap={12} align="flex-start">
         <View style={{ width: 52, height: 52, borderRadius: 16, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name={service.icon} size={26} color={t.fg} />
+          <Icon name={service.icon} size={38} />
         </View>
         <View style={{ flex: 1 }}>
           <T v="h2">{service.name}</T>

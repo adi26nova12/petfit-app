@@ -1,6 +1,6 @@
-import { Bell, CalendarClock, FileText, Package, Syringe, Tag } from 'lucide-react-native';
 import { View } from 'react-native';
 
+import { Bell, CalendarClock, FileText, Package, Syringe, Tag } from '@/components/doodles';
 import * as api from '@/api';
 import type { AppNotification } from '@/api/types';
 import { Card, EmptyState, IconTile, Loading, Row, Screen, T, TopBar } from '@/components/ui';
@@ -27,7 +27,7 @@ export default function Notifications() {
             return (
               <Card key={n.id} padded={false} style={{ padding: 14, backgroundColor: n.read ? colors.white : colors.brand50 }}>
                 <Row gap={12} align="flex-start">
-                  <IconTile tone={m.tone} size={40}><m.icon size={19} color={colors.ink} /></IconTile>
+                  <IconTile tone={m.tone} size={40}><m.icon size={28} color={colors.ink} /></IconTile>
                   <View style={{ flex: 1 }}>
                     <Row style={{ justifyContent: 'space-between' }} align="flex-start">
                       <T v="title" style={{ flex: 1 }}>{n.title}</T>

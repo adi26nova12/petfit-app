@@ -1,7 +1,8 @@
-import { ChevronDown, Clock, Mail, MessageCircle, Phone } from 'lucide-react-native';
+import { ChevronDown } from 'lucide-react-native';
 import { useState } from 'react';
 import { Linking, Pressable, View } from 'react-native';
 
+import { Clock, Mail, MessageCircle, Phone } from '@/components/doodles';
 import { Card, Eyebrow, IconTile, Row, Screen, T, TopBar } from '@/components/ui';
 import { colors } from '@/theme';
 
@@ -37,7 +38,7 @@ export default function Support() {
         {contacts.map((c) => (
           <Card key={c.label} onPress={c.onPress} padded={false} style={{ padding: 14 }}>
             <Row gap={12}>
-              <IconTile tone="purple" size={40}><c.icon size={19} color={colors.brand600} /></IconTile>
+              <IconTile tone="purple" size={40}><c.icon size={28} color={colors.brand600} /></IconTile>
               <View style={{ flex: 1 }}>
                 <T v="title">{c.label}</T>
                 <T v="small">{c.value}</T>

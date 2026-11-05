@@ -1,9 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Heart, Search, ShoppingCart } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, TextInput, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Heart, Search, ShoppingCart } from '@/components/doodles';
 import * as api from '@/api';
 import type { ProductCategory } from '@/api/types';
 import { ProductCard } from '@/components/blocks';

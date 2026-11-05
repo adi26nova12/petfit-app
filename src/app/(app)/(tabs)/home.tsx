@@ -1,13 +1,14 @@
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Bell, CalendarClock, ChevronDown, ChevronRight, Droplet, Flame, MapPin, Scale, Search, ShoppingCart, Syringe, Video } from 'lucide-react-native';
+import { ChevronDown, ChevronRight } from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Bell, CalendarClock, Droplet, Flame, MapPin, Scale, Search, ShoppingCart, Syringe, Video } from '@/components/doodles';
 import * as api from '@/api';
 import { PetAvatar, ProductCard, VetCard } from '@/components/blocks';
 import { ScoreRing } from '@/components/charts';
+import { PeekMascots } from '@/components/mascots';
 import { OfferArt } from '@/components/OfferArt';
 import { Button, Card, IconButton, IconTile, Notice, Pill, Row, SectionHeader, Skeleton, T } from '@/components/ui';
 import { homeOffer } from '@/data/services';
@@ -16,7 +17,6 @@ import { useApi } from '@/lib/useApi';
 import { useStore } from '@/store/app';
 import { colors, fonts, radius, space, type Tone } from '@/theme';
 
-const peek = require('@/assets/brand/luna-pip-peek.webp');
 
 const tools = [
   { slug: 'calories', title: 'Daily calories', body: 'Food & water per day', icon: Flame, tone: 'amber' as Tone },
@@ -56,10 +56,10 @@ export default function Home() {
               </Row>
             </Pressable>
             <Row gap={10}>
-              <IconButton tone="glass" label="Notifications" badge={unread} onPress={() => router.push('/notifications')}>
+              <IconButton label="Notifications" badge={unread} onPress={() => router.push('/notifications')}>
                 <Bell size={19} color={colors.white} />
               </IconButton>
-              <IconButton tone="glass" label="Cart" badge={cartCount} onPress={() => router.push('/cart')}>
+              <IconButton label="Cart" badge={cartCount} onPress={() => router.push('/cart')}>
                 <ShoppingCart size={19} color={colors.white} />
               </IconButton>
             </Row>
@@ -146,7 +146,7 @@ export default function Home() {
               <Card onPress={() => router.push('/bookings')}>
                 <Row gap={12}>
                   <IconTile tone="teal">
-                    {upcoming.mode === 'tele' ? <Video size={20} color={colors.teal} /> : <CalendarClock size={20} color={colors.teal} />}
+                    {upcoming.mode === 'tele' ? <Video size={29} color={colors.teal} /> : <CalendarClock size={29} color={colors.teal} />}
                   </IconTile>
                   <View style={{ flex: 1 }}>
                     <T v="title">{upcoming.title} · {upcoming.providerName}</T>
@@ -168,7 +168,7 @@ export default function Home() {
               <T v="h1" style={{ marginTop: 2 }}>₹0 booking fee</T>
               <T v="small" color={colors.inkSoft} style={{ marginTop: 4 }}>You pay the price on the card. Always.</T>
             </View>
-            <Image source={peek} style={{ width: 132, height: 86, marginRight: -6, marginBottom: -16 }} contentFit="contain" />
+            <PeekMascots width={132} style={{ marginRight: -6, marginBottom: -16 }} />
           </View>
 
           {/* Vets */}
@@ -189,7 +189,7 @@ export default function Home() {
           <Row gap={10} align="stretch">
             {tools.map((t) => (
               <Card key={t.slug} style={{ flex: 1, padding: 12 }} onPress={() => router.push({ pathname: '/tools/[tool]', params: { tool: t.slug } })}>
-                <IconTile tone={t.tone} size={36}><t.icon size={18} color={colors.ink} /></IconTile>
+                <IconTile tone={t.tone} size={36}><t.icon size={26} color={colors.ink} /></IconTile>
                 <T v="smallStrong" style={{ marginTop: 8 }}>{t.title}</T>
                 <T v="caption">{t.body}</T>
               </Card>

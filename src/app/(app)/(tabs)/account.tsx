@@ -1,7 +1,8 @@
 import { useRouter, type Href } from 'expo-router';
-import { Bell, CalendarClock, ChevronRight, CircleHelp, FileText, Heart, LifeBuoy, LogOut, MapPin, Package, PawPrint, Scale, Pencil } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
+import { Bell, CalendarClock, CircleHelp, FileText, Heart, LifeBuoy, LogOut, MapPin, Package, PawPrint, Scale, Pencil } from '@/components/doodles';
 import { PersonAvatar, PetAvatar } from '@/components/blocks';
 import { Card, IconButton, Row, Screen, T } from '@/components/ui';
 import { useStore } from '@/store/app';

@@ -1,23 +1,9 @@
 /** Domain building blocks shared across screens: avatars, listing cards, product cards. */
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import {
-  BadgeCheck,
-  Bed,
-  Bone,
-  Cookie,
-  Heart,
-  House,
-  MapPin,
-  Pill,
-  Shirt,
-  Sparkles,
-  ToyBrick,
-  Video,
-  Footprints,
-} from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { BadgeCheck, Bed, Bone, Cookie, Heart, House, MapPin, Pill, Shirt, Sparkles, ToyBrick, Video, Footprints } from './doodles';
 import type { Pet, Product, ProductCategory, Provider, Vet } from '@/api/types';
 import { discountPct, initials, inr } from '@/lib/format';
 import { useStore } from '@/store/app';
@@ -171,7 +157,7 @@ export function ProductArt({ product, height = 130, rounded = radius.md }: { pro
       ) : (
         <>
           <View style={{ position: 'absolute', width: height * 0.9, height: height * 0.9, borderRadius: height, backgroundColor: 'rgba(255,255,255,0.45)' }} />
-          <Icon size={height * 0.34} color={t.fg} strokeWidth={1.6} />
+          <Icon size={height * 0.5} />
         </>
       )}
     </View>
@@ -197,7 +183,7 @@ export function ProductCard({ product, width }: { product: Product; width?: numb
             dispatch({ type: 'wish', productId: product.id });
           }}
           style={styles.heart}>
-          <Heart size={16} color={wished ? colors.danger : colors.ink} fill={wished ? colors.danger : 'transparent'} />
+          <Heart size={18} dim={!wished} />
         </Pressable>
         {off ? <Tag label={`${off}% off`} tone="ink" style={{ position: 'absolute', left: 8, top: 8 }} /> : null}
       </View>

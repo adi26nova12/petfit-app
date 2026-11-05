@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
-import { ChevronRight, Search } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Search } from '@/components/doodles';
 import { Icon } from '@/components/Icon';
 import { Eyebrow, IconTile, Pill, Row, Screen, T } from '@/components/ui';
 import { serviceGroups, services } from '@/data/services';
@@ -32,7 +33,7 @@ export default function Services() {
                 onPress={() => openService(router, s)}
                 style={({ pressed }) => [styles.row, i > 0 && styles.rowBorder, pressed && { backgroundColor: colors.brand50 }]}>
                 <IconTile tone={s.tone} size={44}>
-                  <Icon name={s.icon} size={21} color={tones[s.tone].fg} />
+                  <Icon name={s.icon} size={30} color={tones[s.tone].fg} />
                 </IconTile>
                 <View style={{ flex: 1, minWidth: 0 }}>
                   <Row gap={8}>

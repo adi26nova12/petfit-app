@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { IntroLuna } from '@/components/IntroLuna';
 import { AppProvider, useStore } from '@/store/app';
 import { colors } from '@/theme';
 
@@ -56,6 +57,7 @@ export default function RootLayout() {
         <AppProvider>
           <StatusBar style="dark" />
           <RootStack />
+          <IntroLuna />
         </AppProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

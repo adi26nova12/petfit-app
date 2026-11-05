@@ -1,7 +1,7 @@
-import { Camera, CircleCheck, LifeBuoy, LocateFixed } from 'lucide-react-native';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native';
 
+import { Camera, CircleCheck, LifeBuoy, LocateFixed } from '@/components/doodles';
 import * as api from '@/api';
 import type { RescueRequest } from '@/api/types';
 import { Button, Card, Field, Notice, Pill, Row, Screen, T, TopBar } from '@/components/ui';

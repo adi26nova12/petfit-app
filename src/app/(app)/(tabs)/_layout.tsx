@@ -1,8 +1,8 @@
 import { Tabs, type BottomTabBarProps } from 'expo-router/js-tabs';
-import { House, LayoutGrid, ShoppingBag, UserRound } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { House, LayoutGrid, ShoppingBag, UserRound } from '@/components/doodles';
 import { PetAvatar } from '@/components/blocks';
 import { tap } from '@/components/ui';
 import { useStore } from '@/store/app';
@@ -35,7 +35,7 @@ function TabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
               </View>
             ) : (
               <View style={[styles.iconWrap, focused && { backgroundColor: colors.brand100 }]}>
-                <Icon size={22} color={color} strokeWidth={focused ? 2.4 : 2} />
+                <Icon size={24} dim={!focused} />
                 {route.name === 'shop' && cartCount > 0 ? (
                   <View style={styles.dot}>
                     <Text style={styles.dotText}>{cartCount}</Text>

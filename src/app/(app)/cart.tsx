@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
-import { Truck } from 'lucide-react-native';
 import { View } from 'react-native';
 
+import { Truck } from '@/components/doodles';
 import * as api from '@/api';
 import { OrderSummary, ProductArt } from '@/components/blocks';
 import { Button, Card, EmptyState, Loading, Row, Screen, Stepper, T, TopBar } from '@/components/ui';

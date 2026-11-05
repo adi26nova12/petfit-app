@@ -4,7 +4,6 @@
  * offset under-shadow, white cards with hairline ink borders on a cream canvas.
  */
 import * as Haptics from 'expo-haptics';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, ChevronRight, Minus, Plus, Star } from 'lucide-react-native';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -30,6 +29,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Ellipse } from 'react-native-svg';
 
 import { colors, fonts, radius, shadow, space, tones, type Tone } from '@/theme';
+import { PeekMascots } from './mascots';
 
 export const tap = () => {
   if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
@@ -413,13 +413,12 @@ export function Loading({ rows = 3, h = 96 }: { rows?: number; h?: number }) {
   );
 }
 
-const peek = require('@/assets/brand/luna-pip-peek.webp');
 
 /** Luna & Pip peeking over an empty state, as on the web's inner pages. */
 export function EmptyState({ title, body, action }: { title: string; body?: string; action?: ReactNode }) {
   return (
     <View style={{ alignItems: 'center', paddingVertical: 28, paddingHorizontal: 12 }}>
-      <Image source={peek} style={{ width: 200, height: 128 }} contentFit="contain" accessibilityIgnoresInvertColors />
+      <PeekMascots width={200} />
       <T v="h3" center style={{ marginTop: 12 }}>{title}</T>
       {body ? <T v="body" center style={{ marginTop: 6 }}>{body}</T> : null}
       {action ? <View style={{ marginTop: 18 }}>{action}</View> : null}

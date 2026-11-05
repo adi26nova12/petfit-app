@@ -1,14 +1,14 @@
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CalendarCheck, FileText, MapPin, Video } from 'lucide-react-native';
 import { View } from 'react-native';
 
+import { CalendarCheck, FileText, MapPin, Video } from '@/components/doodles';
+import { MascotStage } from '@/components/mascots';
 import { Button, Card, Row, Screen, T } from '@/components/ui';
 import { shortDate, weekday } from '@/lib/format';
 import { useStore } from '@/store/app';
 import { colors } from '@/theme';
 
-const duo = require('@/assets/brand/luna-pip-sitting.webp');
+const BOOKED = ['Booked! Woof!'];
 
 export default function BookingSuccess() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -27,7 +27,7 @@ export default function BookingSuccess() {
         </View>
       }>
       <View style={{ alignItems: 'center', marginTop: 28 }}>
-        <Image source={duo} style={{ width: 220, height: 171 }} contentFit="contain" accessibilityLabel="Luna and Pip celebrating" />
+        <MascotStage width={240} lines={BOOKED} celebrate style={{ marginTop: 14 }} />
         <View style={{ marginTop: -14, backgroundColor: colors.tealSoft, borderRadius: 999, padding: 12 }}>
           <CalendarCheck size={28} color={colors.teal} />
         </View>

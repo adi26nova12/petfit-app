@@ -1,14 +1,12 @@
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { ShieldCheck } from 'lucide-react-native';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
 
+import { ShieldCheck } from '@/components/doodles';
 import * as api from '@/api';
+import { PeekMascots } from '@/components/mascots';
 import { Button, Eyebrow, Field, Row, Screen, T, TopBar } from '@/components/ui';
 import { colors } from '@/theme';
-
-const peek = require('@/assets/brand/luna-pip-peek.webp');
 
 export default function Login() {
   const router = useRouter();
@@ -39,7 +37,7 @@ export default function Login() {
         footer={<Button label="Get OTP" size="lg" full loading={loading} disabled={phone.length < 10} onPress={submit} />}>
         <TopBar />
         <View style={{ alignItems: 'center', marginTop: 8 }}>
-          <Image source={peek} style={{ width: 260, height: 166 }} contentFit="contain" accessibilityLabel="Luna and Pip" />
+          <PeekMascots width={260} say="Psst… just your number." side="right" style={{ marginTop: 18 }} />
         </View>
         <Eyebrow style={{ marginTop: 18 }}>Welcome to PetFit</Eyebrow>
         <T v="h1">Log in or sign up</T>

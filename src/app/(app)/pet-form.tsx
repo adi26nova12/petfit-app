@@ -1,8 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Camera } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 
+import { Camera } from '@/components/doodles';
 import * as api from '@/api';
 import type { Species } from '@/api/types';
 import { PetAvatar } from '@/components/blocks';

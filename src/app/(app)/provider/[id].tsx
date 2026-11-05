@@ -1,8 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Check, Clock, MapPin } from 'lucide-react-native';
+import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Clock, MapPin } from '@/components/doodles';
 import * as api from '@/api';
 import type { Package } from '@/api/types';
 import { PersonAvatar, Verified } from '@/components/blocks';

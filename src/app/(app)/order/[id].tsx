@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CircleHelp, MapPin } from 'lucide-react-native';
 import { View } from 'react-native';
 
+import { CircleHelp, MapPin } from '@/components/doodles';
 import { OrderSummary } from '@/components/blocks';
 import { OrderTracker } from '@/components/OrderTracker';
 import { Button, Card, EmptyState, Row, Screen, T, TopBar } from '@/components/ui';

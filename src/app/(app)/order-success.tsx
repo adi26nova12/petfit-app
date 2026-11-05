@@ -1,14 +1,14 @@
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { PackageCheck } from 'lucide-react-native';
 import { View } from 'react-native';
 
+import { PackageCheck } from '@/components/doodles';
+import { MascotStage } from '@/components/mascots';
 import { Button, Card, Row, Screen, T } from '@/components/ui';
 import { inr } from '@/lib/format';
 import { useStore } from '@/store/app';
 import { colors } from '@/theme';
 
-const duo = require('@/assets/brand/luna-pip-sitting.webp');
+const ORDERED = ['Treats incoming!'];
 
 export default function OrderSuccess() {
   const { id = '' } = useLocalSearchParams<{ id: string }>();
@@ -25,7 +25,7 @@ export default function OrderSuccess() {
         </View>
       }>
       <View style={{ alignItems: 'center', marginTop: 28 }}>
-        <Image source={duo} style={{ width: 220, height: 171 }} contentFit="contain" accessibilityLabel="Luna and Pip" />
+        <MascotStage width={240} lines={ORDERED} celebrate style={{ marginTop: 14 }} />
         <View style={{ marginTop: -14, backgroundColor: colors.amberSoft, borderRadius: 999, padding: 12 }}>
           <PackageCheck size={28} color={colors.amberInk} />
         </View>

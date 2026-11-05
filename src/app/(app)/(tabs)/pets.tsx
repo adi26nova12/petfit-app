@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { FileText, FlaskConical, Pencil, Plane, Plus, Scale, Syringe, Upload } from 'lucide-react-native';
+import { Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { FileText, FlaskConical, Pencil, Plane, Scale, Syringe, Upload } from '@/components/doodles';
 import * as api from '@/api';
 import type { VaultDoc, VaultDocKind } from '@/api/types';
 import { PetAvatar } from '@/components/blocks';
@@ -101,7 +102,7 @@ function HealthTab({ petId }: { petId: string }) {
             <T v="caption">Latest</T>
             <T v="h2">{activePet?.weightKg} kg</T>
           </View>
-          <IconTile tone="teal"><Scale size={20} color={colors.teal} /></IconTile>
+          <IconTile tone="teal"><Scale size={29} color={colors.teal} /></IconTile>
         </Row>
         {logging ? (
           <Row gap={10} style={{ marginTop: 12 }} align="flex-end">
@@ -160,7 +161,7 @@ function VaultTab({ petId }: { petId: string }) {
           return (
             <Card key={d.id} padded={false} style={{ padding: 12 }} onPress={() => Alert.alert(d.title, 'The document viewer opens here once files come from the API.')}>
               <Row gap={12}>
-                <IconTile tone={m.tone} size={40}><m.icon size={19} color={colors.ink} /></IconTile>
+                <IconTile tone={m.tone} size={40}><m.icon size={28} color={colors.ink} /></IconTile>
                 <View style={{ flex: 1 }}>
                   <T v="title" numberOfLines={1}>{d.title}</T>
                   <T v="caption">{d.source} · {shortDate(d.date)}</T>
@@ -196,7 +197,7 @@ export default function PetProfile() {
         <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
           <Row style={{ justifyContent: 'space-between' }}>
             <T v="eyebrow" color={colors.amber}>Pet profile</T>
-            <IconButton tone="glass" label="Edit pet" onPress={() => router.push({ pathname: '/pet-form', params: { id: activePet.id } })}>
+            <IconButton label="Edit pet" onPress={() => router.push({ pathname: '/pet-form', params: { id: activePet.id } })}>
               <Pencil size={17} color={colors.white} />
             </IconButton>
           </Row>
