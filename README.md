@@ -6,6 +6,8 @@ This repo is the **frontend only**: every screen, flow and design is done and ru
 
 The design matches the PetFit website: logo purple `#6C42A8`, amber `#FDBD05`, cream canvas, Bricolage Grotesque / Figtree / Instrument Serif type, Luna & Pip mascots, and the same service catalogue and health-tool formulas.
 
+**Live preview:** https://adi26nova12.github.io/petfit-app/ is the web build of the app. On a laptop it appears inside a phone frame. Sign in with any 10-digit number and any 6-digit code. It redeploys on every push to `main` (`.github/workflows/pages.yml`; repo Settings → Pages → Source must be "GitHub Actions").
+
 ---
 
 ## Run it
