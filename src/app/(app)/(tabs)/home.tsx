@@ -4,24 +4,26 @@ import { ChevronDown, ChevronRight } from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Bell, CalendarClock, Droplet, Flame, MapPin, Scale, Search, ShoppingCart, Syringe, Video } from '@/components/doodles';
+import { Bell, CalendarClock, Droplet, Flame, Heart, MapPin, Scale, Search, ShoppingCart, Syringe, Video } from '@/components/doodles';
 import * as api from '@/api';
 import { PetAvatar, ProductCard, VetCard } from '@/components/blocks';
+import { CampaignCarousel } from '@/components/CampaignCarousel';
 import { ScoreRing } from '@/components/charts';
-import { PeekMascots } from '@/components/mascots';
-import { OfferArt } from '@/components/OfferArt';
+import { Icon } from '@/components/Icon';
 import { Button, Card, IconButton, IconTile, Notice, Pill, Row, SectionHeader, Skeleton, T } from '@/components/ui';
-import { homeOffer } from '@/data/services';
+import { campaigns } from '@/data/campaigns';
+import { services } from '@/data/services';
 import { greeting, inr, petSubtitle, relativeDue, shortDate, daysFrom } from '@/lib/format';
+import { openService } from '@/lib/nav';
 import { useApi } from '@/lib/useApi';
 import { useStore } from '@/store/app';
-import { colors, fonts, radius, space, type Tone } from '@/theme';
+import { colors, fonts, radius, space, tones, type Tone } from '@/theme';
 
-
+/** Free health tools, offered from the pet profile card. */
 const tools = [
-  { slug: 'calories', title: 'Daily calories', body: 'Food & water per day', icon: Flame, tone: 'amber' as Tone },
-  { slug: 'weight', title: 'Ideal weight', body: 'Check by breed', icon: Scale, tone: 'teal' as Tone },
-  { slug: 'vaccines', title: 'Vaccine schedule', body: "What's due, when", icon: Syringe, tone: 'purple' as Tone },
+  { slug: 'calories', title: 'Calories', icon: Flame, tone: 'amber' as Tone },
+  { slug: 'weight', title: 'Ideal weight', icon: Scale, tone: 'teal' as Tone },
+  { slug: 'vaccines', title: 'Vaccines', icon: Syringe, tone: 'purple' as Tone },
 ];
 
 export default function Home() {
@@ -39,6 +41,8 @@ export default function Home() {
   const upcoming = state.bookings.filter((b) => b.status === 'upcoming').sort((a, b) => a.date.localeCompare(b.date))[0];
   const unread = (notes.data ?? []).filter((n) => !n.read).length;
   const firstName = state.user?.name.split(' ')[0] ?? 'there';
+  const wished = (products.data ?? []).filter((p) => state.wishlist.includes(p.id));
+  const openWishlist = () => router.push({ pathname: '/shop', params: { cat: 'wishlist' } });
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.cream }}>
@@ -48,14 +52,17 @@ export default function Home() {
         <View style={[styles.hero, { paddingTop: insets.top + 8 }]}>
           <View style={styles.heroGlow} />
           <Row style={{ justifyContent: 'space-between' }}>
-            <Pressable accessibilityRole="button" accessibilityLabel="Change city" onPress={() => router.push('/addresses')}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Change city" onPress={() => router.push('/addresses')} style={{ flexShrink: 1 }}>
               <Row gap={4}>
                 <MapPin size={15} color={colors.amber} />
-                <T v="smallStrong" color={colors.white}>{state.user?.city ?? 'Set location'}</T>
+                <T v="smallStrong" color={colors.white} numberOfLines={1} style={{ flexShrink: 1 }}>{state.user?.city ?? 'Set location'}</T>
                 <ChevronDown size={15} color={colors.brand200} />
               </Row>
             </Pressable>
             <Row gap={10}>
+              <IconButton label="Wishlist" badge={state.wishlist.length} onPress={openWishlist}>
+                <Heart size={19} />
+              </IconButton>
               <IconButton label="Notifications" badge={unread} onPress={() => router.push('/notifications')}>
                 <Bell size={19} color={colors.white} />
               </IconButton>
@@ -76,38 +83,64 @@ export default function Home() {
           </Pressable>
         </View>
 
+        {/* 1. Pet profile, with the free health tools on it */}
         <View style={{ paddingHorizontal: space.gutter }}>
-          {/* Pet card */}
-          {activePet ? (
-            <Card style={styles.petCard} onPress={() => router.push('/pets')}>
-              <Row gap={14}>
-                <PetAvatar pet={activePet} size={60} />
-                <View style={{ flex: 1, minWidth: 0 }}>
-                  <T v="h3">{activePet.name}</T>
-                  <T v="small" numberOfLines={1}>{petSubtitle(activePet)}</T>
-                  {state.pets.length > 1 ? (
-                    <Row gap={6} style={{ marginTop: 8 }}>
-                      {state.pets.filter((p) => p.id !== activePet.id).map((p) => (
-                        <Pressable key={p.id} hitSlop={6} onPress={() => dispatch({ type: 'activePet', id: p.id })}>
-                          <Pill tone="sand" label={`Switch to ${p.name}`} />
-                        </Pressable>
-                      ))}
-                    </Row>
-                  ) : null}
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <ScoreRing score={activePet.healthScore} size={58} />
-                  <T v="caption" style={{ marginTop: 2 }}>Health</T>
-                </View>
-              </Row>
-            </Card>
-          ) : (
-            <Card style={styles.petCard}>
-              <T v="h3">Add your first pet</T>
-              <T v="small" style={{ marginTop: 4 }}>Get reminders, records and the right products.</T>
-              <Button label="Add a pet" style={{ marginTop: 12 }} onPress={() => router.push('/pet-form')} />
-            </Card>
-          )}
+          <Card style={styles.petCard}>
+            {activePet ? (
+              <>
+                <Pressable accessibilityRole="button" accessibilityLabel={`${activePet.name}'s profile`} onPress={() => router.push('/pets')}>
+                  <Row gap={14}>
+                    <PetAvatar pet={activePet} size={60} />
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <T v="h3">{activePet.name}</T>
+                      <T v="small" numberOfLines={1}>{petSubtitle(activePet)}</T>
+                      <Row gap={2} style={{ marginTop: 4 }}>
+                        <T v="caption" color={colors.brand600}>View profile</T>
+                        <ChevronRight size={13} color={colors.brand600} />
+                      </Row>
+                    </View>
+                    <View style={{ alignItems: 'center' }}>
+                      <ScoreRing score={activePet.healthScore} size={58} />
+                      <T v="caption" style={{ marginTop: 2 }}>Health</T>
+                    </View>
+                  </Row>
+                </Pressable>
+                {state.pets.length > 1 ? (
+                  <Row gap={6} style={{ marginTop: 10, flexWrap: 'wrap' }}>
+                    {state.pets.filter((p) => p.id !== activePet.id).map((p) => (
+                      <Pressable key={p.id} hitSlop={6} onPress={() => dispatch({ type: 'activePet', id: p.id })}>
+                        <Pill tone="sand" label={`Switch to ${p.name}`} />
+                      </Pressable>
+                    ))}
+                  </Row>
+                ) : null}
+              </>
+            ) : (
+              <>
+                <T v="h3">Add your first pet</T>
+                <T v="small" style={{ marginTop: 4 }}>Get reminders, records and the right products.</T>
+                <Button label="Add a pet" style={{ marginTop: 12 }} onPress={() => router.push('/pet-form')} />
+              </>
+            )}
+
+            <View style={styles.toolsDivider} />
+            <Row style={{ justifyContent: 'space-between' }}>
+              <T v="eyebrow" color={colors.muted}>Free health tools</T>
+              <Pill label="Free" tone="success" />
+            </Row>
+            <Row gap={8} style={{ marginTop: 10 }} align="stretch">
+              {tools.map((t) => (
+                <Pressable
+                  key={t.slug}
+                  accessibilityRole="button"
+                  onPress={() => router.push({ pathname: '/tools/[tool]', params: { tool: t.slug } })}
+                  style={({ pressed }) => [styles.tool, { backgroundColor: tones[t.tone].bg }, pressed && { opacity: 0.8 }]}>
+                  <t.icon size={24} />
+                  <T v="smallStrong" numberOfLines={1} style={{ fontSize: 12.5 }}>{t.title}</T>
+                </Pressable>
+              ))}
+            </Row>
+          </Card>
 
           {/* Reminder */}
           {vaccines.loading ? (
@@ -122,19 +155,35 @@ export default function Home() {
               onPress={() => router.push({ pathname: '/service/[slug]', params: { slug: 'vaccination' } })}
             />
           ) : null}
+        </View>
 
-          {/* Offer grid */}
-          <SectionHeader title="All in one app" action="All services" onAction={() => router.push('/services')} />
-          <View style={styles.grid}>
-            {homeOffer.map((o) => (
+        {/* 2. Campaigns & offers */}
+        <View style={{ marginTop: 20 }}>
+          <CampaignCarousel items={campaigns} />
+        </View>
+
+        {/* 3. Every service */}
+        <View style={{ paddingHorizontal: space.gutter }}>
+          <SectionHeader title="All services" action="Browse" onAction={() => router.push('/services')} />
+          <View style={styles.serviceGrid}>
+            {services.map((s) => (
               <Pressable
-                key={o.name}
+                key={s.slug}
                 accessibilityRole="button"
-                onPress={() => router.push(o.slug === 'food' || o.slug === 'products' ? { pathname: '/shop', params: { cat: o.slug === 'food' ? 'food' : '' } } : { pathname: '/service/[slug]', params: { slug: o.slug } })}
-                style={({ pressed }) => [styles.tile, pressed && { transform: [{ scale: 0.97 }] }]}>
-                <OfferArt name={o.name} size={60} />
-                <T v="title" style={{ marginTop: 8 }}>{o.name}</T>
-                <T v="caption" numberOfLines={2}>{o.items}</T>
+                accessibilityLabel={s.listing.kind === 'waitlist' ? `${s.name}, coming soon` : s.name}
+                onPress={() => openService(router, s)}
+                style={({ pressed }) => [styles.serviceTile, pressed && { opacity: 0.6 }]}>
+                <View>
+                  <IconTile tone={s.tone} size={48}>
+                    <Icon name={s.icon} size={28} />
+                  </IconTile>
+                  {s.listing.kind === 'waitlist' ? (
+                    <View style={styles.soon}>
+                      <T style={styles.soonText}>Soon</T>
+                    </View>
+                  ) : null}
+                </View>
+                <T v="caption" color={colors.ink} numberOfLines={1} style={styles.serviceLabel}>{s.shortName}</T>
               </Pressable>
             ))}
           </View>
@@ -161,16 +210,6 @@ export default function Home() {
             </>
           ) : null}
 
-          {/* Zero fee banner */}
-          <View style={styles.banner}>
-            <View style={{ flex: 1, paddingRight: 8 }}>
-              <T v="eyebrow" color={colors.amberInk}>Pet parents pay</T>
-              <T v="h1" style={{ marginTop: 2 }}>₹0 booking fee</T>
-              <T v="small" color={colors.inkSoft} style={{ marginTop: 4 }}>You pay the price on the card. Always.</T>
-            </View>
-            <PeekMascots width={132} style={{ marginRight: -6, marginBottom: -16 }} />
-          </View>
-
           {/* Vets */}
           <SectionHeader title="Top-rated vets near you" action="See all" onAction={() => router.push({ pathname: '/service/[slug]', params: { slug: 'vets' } })} />
         </View>
@@ -184,18 +223,31 @@ export default function Home() {
             ))}
         </ScrollView>
 
+        {/* Wishlist */}
         <View style={{ paddingHorizontal: space.gutter }}>
-          <SectionHeader title="Free health tools" />
-          <Row gap={10} align="stretch">
-            {tools.map((t) => (
-              <Card key={t.slug} style={{ flex: 1, padding: 12 }} onPress={() => router.push({ pathname: '/tools/[tool]', params: { tool: t.slug } })}>
-                <IconTile tone={t.tone} size={36}><t.icon size={26} color={colors.ink} /></IconTile>
-                <T v="smallStrong" style={{ marginTop: 8 }}>{t.title}</T>
-                <T v="caption">{t.body}</T>
-              </Card>
-            ))}
-          </Row>
+          <SectionHeader title="Your wishlist" action={wished.length ? 'See all' : undefined} onAction={openWishlist} />
+          {!products.loading && wished.length === 0 ? (
+            <Card onPress={() => router.push('/shop')}>
+              <Row gap={12}>
+                <IconTile tone="blush" size={44}><Heart size={26} /></IconTile>
+                <View style={{ flex: 1 }}>
+                  <T v="title">Save what {activePet?.name ?? 'your pet'} will love</T>
+                  <T v="small">Tap the heart on any product to keep it here.</T>
+                </View>
+                <ChevronRight size={18} color={colors.muted} />
+              </Row>
+            </Card>
+          ) : null}
+        </View>
+        {products.loading || wished.length ? (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: space.gutter, gap: 12 }}>
+            {products.loading
+              ? [0, 1].map((i) => <Skeleton key={i} h={230} style={{ width: 160 }} />)
+              : wished.map((p) => <ProductCard key={p.id} product={p} width={164} />)}
+          </ScrollView>
+        ) : null}
 
+        <View style={{ paddingHorizontal: space.gutter }}>
           <SectionHeader title={`Picked for ${activePet?.name ?? 'your pet'}`} action="Shop" onAction={() => router.push('/shop')} />
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: space.gutter, gap: 12 }}>
@@ -241,24 +293,37 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   petCard: { marginTop: -44 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  tile: {
-    width: '30%',
-    flexGrow: 1,
+  toolsDivider: { height: 1, backgroundColor: colors.line, marginVertical: 14 },
+  tool: {
+    flex: 1,
+    minWidth: 0,
+    alignItems: 'center',
+    gap: 4,
+    borderRadius: radius.md,
+    paddingHorizontal: 6,
+    paddingVertical: 10,
+  },
+  serviceGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     backgroundColor: colors.white,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.line,
-    padding: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
   },
-  banner: {
-    marginTop: 24,
-    backgroundColor: colors.amber,
-    borderRadius: radius.xl,
-    padding: 18,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    overflow: 'hidden',
+  serviceTile: { width: '25%', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 2 },
+  serviceLabel: { marginTop: 6, textAlign: 'center', fontFamily: fonts.bodySemi },
+  soon: {
+    position: 'absolute',
+    top: -5,
+    right: -10,
+    backgroundColor: colors.ink,
+    borderRadius: radius.pill,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
   },
+  soonText: { fontFamily: fonts.bodyBold, fontSize: 9, lineHeight: 12, color: colors.white },
   sign: { fontFamily: fonts.serifItalic, fontSize: 18, color: colors.brand400, marginTop: 6 },
 });

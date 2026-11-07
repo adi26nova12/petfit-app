@@ -288,13 +288,3 @@ export const services: Service[] = [
 export const serviceGroups: ServiceGroup[] = ['Health', 'Care', 'Shop', 'Life & Travel', 'Protect'];
 
 export const getService = (slug: string) => services.find((s) => s.slug === slug);
-
-/** The six offer tiles on Home, as on the web hero ("All in one app"). */
-export const homeOffer = [
-  { name: 'Health', items: 'Vets, labs, vaccines', icon: 'Stethoscope', slug: 'vets', tone: 'teal' },
-  { name: 'Care', items: 'Grooming, boarding', icon: 'Scissors', slug: 'grooming', tone: 'blush' },
-  { name: 'Food', items: 'Dry, wet, fresh, treats', icon: 'Bone', slug: 'food', tone: 'amber' },
-  { name: 'Products', items: 'Toys, beds, leashes', icon: 'ShoppingBag', slug: 'products', tone: 'purple' },
-  { name: 'Travel', items: 'Trains, parties', icon: 'TrainFront', slug: 'pet-travel', tone: 'teal' },
-  { name: 'Protect', items: 'Insurance, rescue', icon: 'ShieldCheck', slug: 'pet-rescue', tone: 'sand' },
-] as const;
