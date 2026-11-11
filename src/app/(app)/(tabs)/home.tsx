@@ -2,19 +2,20 @@ import { Image } from 'expo-image';
 import { useRouter, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react-native';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useRef } from 'react';
+import { Pressable, ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
-  Bell, Bone, CalendarClock, Camera, Droplet, Flame, Heart, MapPin, PawPrint, Scale, Scissors, Search, ShoppingCart, Stethoscope, Syringe, Video,
+  Bell, Bone, CalendarClock, Camera, Droplet, Heart, MapPin, PawPrint, Scissors, Search, ShoppingCart, Stethoscope, Syringe, Video,
   type DoodleIcon,
 } from '@/components/doodles';
 import * as api from '@/api';
 import { PetAvatar, ProductCard, VetCard } from '@/components/blocks';
 import { CampaignCarousel } from '@/components/CampaignCarousel';
-import { ScoreRing } from '@/components/charts';
+import { HealthToolBubbles } from '@/components/HealthToolBubbles';
 import { Icon } from '@/components/Icon';
-import { Card, IconButton, IconTile, Pill, Row, SectionHeader, Skeleton, T } from '@/components/ui';
+import { Card, IconButton, IconTile, Row, SectionHeader, Skeleton, T, tap } from '@/components/ui';
 import { campaigns } from '@/data/campaigns';
 import { services } from '@/data/services';
 import { daysFrom, inr, petSubtitle, shortDate } from '@/lib/format';
@@ -24,16 +25,8 @@ import { useStore } from '@/store/app';
 import { colors, fonts, radius, tones, type Tone } from '@/theme';
 
 const logo = require('@/assets/brand/petfit-logo.png');
-const mascots = require('@/assets/brand/luna-pip-sitting.webp');
 
 const GUTTER = 16;
-
-/** Free health tools, offered from the pet profile card. */
-const tools = [
-  { slug: 'calories', title: 'Calories', icon: Flame, tone: 'amber' as Tone },
-  { slug: 'weight', title: 'Ideal weight', icon: Scale, tone: 'teal' as Tone },
-  { slug: 'vaccines', title: 'Vaccines', icon: Syringe, tone: 'purple' as Tone },
-];
 
 const quickActions: { label: string; icon: DoodleIcon; bg: string; href: Href }[] = [
   { label: 'Book a Grooming Session', icon: Scissors, bg: '#e5f6ea', href: { pathname: '/service/[slug]', params: { slug: 'grooming' } } },
@@ -65,9 +58,17 @@ export default function Home() {
   const products = useApi(() => api.getProducts(), []);
   const notes = useApi(() => api.getNotifications(), []);
 
+  const scrollRef = useRef<ScrollViewInstance>(null);
+  const servicesY = useRef(0);
+
   const unread = (notes.data ?? []).filter((n) => !n.read).length;
-  const firstName = state.user?.name.split(' ')[0] ?? 'there';
   const petName = activePet?.name ?? 'your pet';
+  /** Picking a pet makes it the active one and takes the user down to the services. */
+  const helpPet = (id: string) => {
+    tap();
+    if (id !== activePet?.id) dispatch({ type: 'activePet', id });
+    scrollRef.current?.scrollTo({ y: Math.max(0, servicesY.current - 4), animated: true });
+  };
   const wished = (products.data ?? []).filter((p) => state.wishlist.includes(p.id));
   const openWishlist = () => router.push({ pathname: '/shop', params: { cat: 'wishlist' } });
 
@@ -107,7 +108,7 @@ export default function Home() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.cream }}>
       <StatusBar style="dark" />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 40 }}>
+      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 40 }}>
         <View style={{ paddingHorizontal: GUTTER }}>
           {/* Header */}
           <Row style={{ justifyContent: 'space-between' }} gap={8}>
@@ -139,84 +140,77 @@ export default function Home() {
             <T v="body" color={colors.muted} numberOfLines={1} style={{ flex: 1 }}>Search vets, grooming, food, products and more…</T>
           </Pressable>
 
-          {/* Pet profile, with health score and the free health tools on it */}
+        </View>
+
+        {/* Campaigns & offers, right under search */}
+        <View style={{ marginTop: 14 }}>
+          <CampaignCarousel items={campaigns} />
+        </View>
+
+        <View style={{ paddingHorizontal: GUTTER }}>
+          {/* Whom are we helping today? Pet(s) on the left, floating health tools on the right */}
           <View style={styles.petCard}>
-            <View style={styles.mascotWrap} pointerEvents="none">
-              <Row style={{ justifyContent: 'space-between', paddingHorizontal: 2 }}>
-                <T style={styles.note}>Luna says hi!</T>
-                <T style={[styles.note, { textAlign: 'right' }]}>Pip is{'\n'}here too!</T>
-              </Row>
-              <Image source={mascots} style={styles.mascots} contentFit="contain" accessibilityLabel="Luna the cat and Pip the golden retriever" />
-            </View>
-
-            <Row gap={12} align="flex-start" style={{ paddingRight: 104 }}>
-              {activePet ? (
-                <View>
-                  <Pressable accessibilityRole="button" accessibilityLabel={`${activePet.name}'s profile`} onPress={() => router.push('/pets')} style={styles.petPhoto}>
-                    <PetAvatar pet={activePet} size={76} />
-                  </Pressable>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`Edit ${activePet.name}'s photo and details`}
-                    hitSlop={6}
-                    onPress={() => router.push({ pathname: '/pet-form', params: { id: activePet.id } })}
-                    style={styles.cameraBadge}>
-                    <Camera size={15} />
-                  </Pressable>
-                </View>
-              ) : null}
+            <T v="h2" color={colors.brand600} style={styles.petQuestion}>Whom are we helping today?</T>
+            <Row gap={10} align="flex-start" style={{ marginTop: 12 }}>
               <View style={{ flex: 1, minWidth: 0 }}>
-                <T v="smallStrong" color={colors.inkSoft}>Hi {firstName}!</T>
-                <T v="h2" color={colors.brand600} style={styles.petQuestion}>
-                  {activePet ? `How is ${activePet.name} doing today?` : 'Add your first pet'}
-                </T>
-                <T v="caption" numberOfLines={2} style={{ marginTop: 4 }}>
-                  {activePet ? petSubtitle(activePet) : 'Get reminders, records and the right products.'}
-                </T>
+                {activePet && state.pets.length === 1 ? (
+                  <Row gap={10} align="flex-start">
+                    <View>
+                      <Pressable accessibilityRole="button" accessibilityLabel={`Help ${activePet.name}: show services`} onPress={() => helpPet(activePet.id)} style={styles.petPhoto}>
+                        <PetAvatar pet={activePet} size={64} />
+                      </Pressable>
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`Edit ${activePet.name}'s photo and details`}
+                        hitSlop={6}
+                        onPress={() => router.push({ pathname: '/pet-form', params: { id: activePet.id } })}
+                        style={styles.cameraBadge}>
+                        <Camera size={13} />
+                      </Pressable>
+                    </View>
+                    <Pressable accessibilityRole="button" onPress={() => helpPet(activePet.id)} style={{ flex: 1, minWidth: 0 }}>
+                      <T v="h3" numberOfLines={1}>{activePet.name}</T>
+                      <T v="caption" numberOfLines={3} style={{ marginTop: 2 }}>{petSubtitle(activePet)}</T>
+                    </Pressable>
+                  </Row>
+                ) : activePet ? (
+                  <View style={{ gap: 6 }}>
+                    {state.pets.map((p) => {
+                      const on = p.id === activePet.id;
+                      return (
+                        <Pressable
+                          key={p.id}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: on }}
+                          accessibilityLabel={`Help ${p.name}: show services`}
+                          onPress={() => helpPet(p.id)}
+                          style={({ pressed }) => [styles.petRow, on && styles.petRowOn, pressed && { opacity: 0.8 }]}>
+                          <View style={styles.petRowPhoto}>
+                            <PetAvatar pet={p} size={40} />
+                          </View>
+                          <View style={{ flex: 1, minWidth: 0 }}>
+                            <T v="smallStrong" numberOfLines={1}>{p.name}</T>
+                            <T v="caption" numberOfLines={1}>{p.breed || p.species}</T>
+                          </View>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                ) : (
+                  <T v="small">Add your pet to get reminders, records and the right products.</T>
+                )}
+
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => router.push(activePet ? '/pets' : '/pet-form')}
+                  style={({ pressed }) => [styles.profileBtn, pressed && { opacity: 0.8 }]}>
+                  <T style={styles.profileBtnText}>{activePet ? 'View Pet Profile' : 'Add a pet'}</T>
+                  <ArrowRight size={14} color={colors.brand600} strokeWidth={2.6} />
+                </Pressable>
               </View>
-            </Row>
 
-            <Row gap={8} style={{ marginTop: 12, flexWrap: 'wrap' }}>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => router.push(activePet ? '/pets' : '/pet-form')}
-                style={({ pressed }) => [styles.profileBtn, pressed && { opacity: 0.8 }]}>
-                <T style={styles.profileBtnText}>{activePet ? 'View Pet Profile' : 'Add a pet'}</T>
-                <ArrowRight size={14} color={colors.brand600} strokeWidth={2.6} />
-              </Pressable>
-              {activePet
-                ? state.pets.filter((p) => p.id !== activePet.id).map((p) => (
-                  <Pressable key={p.id} hitSlop={6} onPress={() => dispatch({ type: 'activePet', id: p.id })}>
-                    <Pill tone="sand" label={`Switch to ${p.name}`} />
-                  </Pressable>
-                ))
-                : null}
+              <HealthToolBubbles healthScore={activePet?.healthScore} />
             </Row>
-
-            <View style={styles.toolPanel}>
-              <Row style={{ justifyContent: 'space-between' }}>
-                <T v="eyebrow" color={colors.muted}>Health & free tools</T>
-                <Pill label="Free" tone="success" />
-              </Row>
-              <Row gap={6} style={{ marginTop: 8 }} align="stretch">
-                {activePet ? (
-                  <Pressable accessibilityRole="button" onPress={() => router.push('/pets')} style={({ pressed }) => [styles.tool, { backgroundColor: colors.brand50 }, pressed && { opacity: 0.8 }]}>
-                    <ScoreRing score={activePet.healthScore} size={30} stroke={4} />
-                    <T v="smallStrong" numberOfLines={1} style={styles.toolLabel}>Health</T>
-                  </Pressable>
-                ) : null}
-                {tools.map((t) => (
-                  <Pressable
-                    key={t.slug}
-                    accessibilityRole="button"
-                    onPress={() => router.push({ pathname: '/tools/[tool]', params: { tool: t.slug } })}
-                    style={({ pressed }) => [styles.tool, { backgroundColor: tones[t.tone].bg }, pressed && { opacity: 0.8 }]}>
-                    <t.icon size={26} />
-                    <T v="smallStrong" numberOfLines={2} style={styles.toolLabel}>{t.title}</T>
-                  </Pressable>
-                ))}
-              </Row>
-            </View>
           </View>
 
           {/* Quick actions */}
@@ -279,9 +273,12 @@ export default function Home() {
             </ScrollView>
           </View>
 
-          {/* Every service (icons as before) */}
-          <Row style={{ justifyContent: 'space-between', marginTop: 22, marginBottom: 10 }}>
-            <T v="h2">Our Services</T>
+        </View>
+
+        {/* Every service (icons as before). Tapping a pet above scrolls here. */}
+        <View style={{ paddingHorizontal: GUTTER }} onLayout={(e) => { servicesY.current = e.nativeEvent.layout.y; }}>
+          <Row style={{ justifyContent: 'space-between', marginTop: 22, marginBottom: 10 }} gap={8}>
+            <T v="h2" style={{ flexShrink: 1, fontSize: 20, lineHeight: 24 }}>How are we helping {petName} today?</T>
             <ViewAll onPress={() => router.push('/services')} />
           </Row>
           <View style={styles.serviceGrid}>
@@ -306,11 +303,6 @@ export default function Home() {
               </Pressable>
             ))}
           </View>
-        </View>
-
-        {/* Campaigns & offers */}
-        <View style={{ marginTop: 18 }}>
-          <CampaignCarousel items={campaigns} />
         </View>
 
         {/* Vets */}
@@ -421,26 +413,26 @@ const styles = StyleSheet.create({
     padding: 14,
     overflow: 'hidden',
   },
-  mascotWrap: { position: 'absolute', top: 8, right: 4, width: 118 },
-  note: { fontFamily: fonts.serifItalic, fontSize: 13, lineHeight: 14, color: colors.brand600 },
-  mascots: { width: 118, height: 92, marginTop: 2 },
-  petPhoto: { width: 80, height: 80, borderRadius: 40, overflow: 'hidden', borderWidth: 3, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
+  petPhoto: { width: 68, height: 68, borderRadius: 34, overflow: 'hidden', borderWidth: 3, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   cameraBadge: {
     position: 'absolute',
     right: -2,
     bottom: -2,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: colors.brand600,
     borderWidth: 2,
     borderColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  petQuestion: { fontSize: 19, lineHeight: 22, marginTop: 2 },
+  petQuestion: { fontSize: 20, lineHeight: 24 },
+  petRow: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 6, borderRadius: radius.md, borderWidth: 1.5, borderColor: 'transparent' },
+  petRowOn: { backgroundColor: colors.white, borderColor: colors.brand300 },
+  petRowPhoto: { width: 40, height: 40, borderRadius: 20, overflow: 'hidden' },
   profileBtn: {
-    marginTop: 10,
+    marginTop: 12,
     alignSelf: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
@@ -451,9 +443,6 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   profileBtnText: { fontFamily: fonts.bodyBold, fontSize: 13, color: colors.brand600 },
-  toolPanel: { marginTop: 14, backgroundColor: colors.white, borderRadius: radius.lg, padding: 10 },
-  tool: { flex: 1, minWidth: 0, alignItems: 'center', gap: 4, borderRadius: radius.md, paddingHorizontal: 4, paddingVertical: 8 },
-  toolLabel: { fontSize: 11.5, lineHeight: 14, textAlign: 'center' },
   quick: { flex: 1, minWidth: 0, minHeight: 112, borderRadius: radius.lg, padding: 10, justifyContent: 'space-between' },
   quickChevron: { width: 22, height: 22, borderRadius: 11, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   quickLabel: { marginTop: 8, fontSize: 12.5, lineHeight: 16 },
